@@ -49,9 +49,9 @@ fruits_info = [
 ]
 
 class mongo_local_insert:   # 로컬 데이터베이스 인서트 클래스 선언
-    def __init__(self,collection_name) -> None:
-        self.address='mongodb://localhost:27017'    # 호스트 어드레스 지정
-        self.database="local"   # 'local'이라는 이름의 database 선언
+    def __init__(self,address,database,collection_name) -> None:
+        self.address=address    # 호스트 어드레스 변수 지정
+        self.database=database   # 'local'이라는 이름의 database 선언
         self.insert_collection=''
         self.collection_name = collection_name  # 콜렉션 변수 저장
         pass
@@ -68,6 +68,6 @@ class mongo_local_insert:   # 로컬 데이터베이스 인서트 클래스 선�
             pass
         return
     
-loinsert=mongo_local_insert('fruits') #collection 입력에 대한 클래스 인스턴스
+loinsert=mongo_local_insert('mongodb://localhost:27017','local','fruits') # address, database, collection 입력에 대한 클래스 인스턴스
 loinsert.connect()  #DB 연결 함수 호출
 loinsert.insert(fruits_info)    #입력된 collection에 대한 infor_list insert
