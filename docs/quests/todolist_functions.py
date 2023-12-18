@@ -26,23 +26,23 @@ class mongo_get_question:
         self.insert_collection = db_local[collection_name] #collection 진입
         return self.insert_collection   #진입 결과 리턴
 
-    def input_id(self): # Collection 'participants'
-        self.get_name = input('Input Your Name : ')
-        self.get_name_list.append(self.get_name)
-        self.check_list=list(self.insert_collection.find({},{}))
-        if len(self.check_list) == 0:
-            self.insert_collection.insert_one({'Name' : self.get_name})
-            pass
-        else:
-            for i in range(len(self.check_list)):
-                if self.get_name in self.check_list[i]['Name']:
-                    pass 
-                else:
-                    self.insert_collection.insert_one({'Name' : self.get_name})
-                    pass
-                pass
-            pass
-        return
+    # def input_id(self): # Collection 'participants'
+    #     self.get_name = input('Input Your Name : ')
+    #     self.get_name_list.append(self.get_name)
+    #     self.check_list=list(self.insert_collection.find({},{}))
+    #     if len(self.check_list) == 0:
+    #         self.insert_collection.insert_one({'Name' : self.get_name})
+    #         pass
+    #     else:
+    #         for i in range(len(self.check_list)):
+    #             if self.get_name in self.check_list[i]['Name']:
+    #                 pass 
+    #             else:
+    #                 self.insert_collection.insert_one({'Name' : self.get_name})
+    #                 pass
+    #             pass
+    #         pass
+    #     return
 
     
     def update_id(self): # Collection 'participants'
@@ -84,31 +84,37 @@ class mongo_get_question:
     
     def name_check(self): #collection 'participants'
         self.check_list=list(self.insert_collection.find({},{}))
-        for i in range(len(self.check_list)):
-            if self.get_name in self.check_list[i]['Name']:
-                self.namelist.append(self.check_list[i]['Name'])
-                self.get_id_list.append(self.check_list[self.namelist.index(self.get_name)-1]['_id'])
+        if self.get_name in self.namelist:
             pass
+        else:
+            for i in range(len(self.check_list)):
+                if self.get_name in self.check_list[i]['Name']:
+                    self.namelist.append(self.check_list[i]['Name'])
+                    self.get_id_list.append(self.check_list[self.namelist.index(self.get_name)-1]['_id'])
+                    break
+                else :
+                    self.namelist.append(self.get_name)
+                    break
         return
  
     def input_upload(self): #collection 'participants_todos'
         self.upload_dic ={                                  # 여기 인덱스 값으로 교체해줘야함
-            '_id' : self.get_id_list[self.namelist.index(self.get_name)],
-            'Title_num' : self.get_num_list[self.namelist.index(self.get_name)],
-            'Status': self.get_str_list[self.namelist.index(self.get_name)]
+            '_id' : self.get_id_list[self.get_name_list.index(self.get_name)],
+            # 'Title_num' : self.get_num_list[self.namelist.index(self.get_name)],
+            'Status'+str(self.get_num_list[self.namelist.index(self.get_name)]): self.get_str_list[self.namelist.index(self.get_name)]
         }
         self.insert_collection.insert_one(self.upload_dic)
         pass
 
     def update_upload(self):    # 여기 인덱스 값으로 교체해줘야함
         self.upload_list.append(self.upload_dic)
-        self.insert_collection.update_many({'_id': {'$in': self.check_list}}, {'$set': {'Title_num': self.upload_dic['Title_num'], 'Status': self.upload_dic['Status']}})
+        self.insert_collection.update_many({'_id': {'$in': self.check_list}}, {'$set': {'Status'+str(self.get_num_list[self.namelist.index(self.get_name)]): self.upload_dic['Status']}})
         return
 
 
     def run_program(self):
         self.connect('participants')
-        self.input_id()
+        self.update_id()
         while True:
             self.connect('todos_list')
             self.struct_save()
